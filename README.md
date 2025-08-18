@@ -55,9 +55,58 @@ Permanently deletes the `SafeCard` wallet seed. It will return your SafeCard to 
 ./safecard-cli deleteSeed
 ```
 
+### Import Mnemonic
+
+Import a BIP39 mnemonic seed phrase (12, 18, or 24 words) into your SafeCard. This command allows you to restore an existing wallet from a seed phrase or transfer a wallet from another device to your SafeCard.
+
+**WARNING: This operation will permanently overwrite any existing seed on your SafeCard. Make sure you have backed up any important keys before proceeding.**
+
+**Features:**
+- Supports 12, 18, or 24 word BIP39 mnemonic phrases
+- Optional BIP39 passphrase support for enhanced security  
+- Loads seeds as **exportable** (can be retrieved later via exportSeed/exportPriv)
+- Includes verification to confirm the seed was loaded correctly
+- Validates all words against the BIP39 wordlist
+
+```
+./safecard-cli importMnemonic
+```
+
+The command will guide you through:
+1. PIN verification
+2. Confirmation prompts (with warnings about overwriting existing seeds)
+3. Mnemonic phrase input and validation
+4. Optional passphrase entry
+5. Final confirmation before loading
+6. Verification that the seed was loaded and is exportable
+
+### Import Seed
+
+Import a hex seed (from the exportSeed command) into your SafeCard. This command allows you to transfer a seed from one SafeCard to another without exposing the original mnemonic phrase.
+
+**WARNING: This operation will permanently overwrite any existing seed on your SafeCard. Make sure you have backed up any important keys before proceeding.**
+
+**Features:**
+- Accepts hex-encoded seed data from exportSeed command
+- Validates hex format and seed length
+- Loads seeds as **exportable** (can be retrieved later via exportSeed/exportPriv)
+- Includes verification to confirm the seed was imported correctly
+- Useful for SafeCard-to-SafeCard transfers
+
+```
+./safecard-cli importSeed
+```
+
+The command will guide you through:
+1. PIN verification
+2. Confirmation prompts (with warnings about overwriting existing seeds)
+3. Hex seed input and validation
+4. Final confirmation before importing
+5. Verification that the seed was imported and is exportable
+
 ### Export Seed
 
-Export the card's master wallet seed as a binary seed represented in hex. This hex seed can be used to derive wallet private keys and addresses. Note that this is **not a seed phrase**; it is instead a hash of your seed phrase. You will likely have difficulty finding third party wallet software that you can use to import this seed directly. However, you can keep this seed somewhere safe and import it to another SafeCard at a later date (load seed not yet implemented).
+Export the card's master wallet seed as a binary seed represented in hex. This hex seed can be used to derive wallet private keys and addresses. Note that this is **not a seed phrase**; it is instead a hash of your seed phrase. You will likely have difficulty finding third party wallet software that you can use to import this seed directly. However, you can keep this seed somewhere safe and import it to another SafeCard at a later date using the `importSeed` command.
 
 ```
 ./safecard-cli exportSeed
@@ -173,6 +222,9 @@ You can perform this operation on any production SafeCard - it does not require 
 In development, the CLI can be run directly without first building a binary by running it like so:
 ```
 go run main.go exportSeed
+go run main.go importMnemonic
+go run main.go importSeed
+go run main.go exportPriv
 ```
 ### Adding a new CLI command
 In order to develop a new command for the CLI (e.g. exportSeed or deleteSeed) one should use the cobra autogenerate tool to set up a preformatted file under the cmd/ directory, by using the command below.
